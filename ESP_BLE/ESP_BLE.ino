@@ -1,17 +1,13 @@
 #include <BLEDevice.h>
 #include <BLEUtils.h>
 #include <BLEServer.h>
+#include <ESP32Servo.h>
 
 #define SERVICE_UUID "a31e7f39-239b-4ccf-81d3-df44c325716f"
 #define CHARACTERISTIC_UUID "8a8d440c-b1c7-4a97-af26-784211ee50f0"
 
 const byte gpio = 5;
-
-//void types(String a) { Serial.println("it's a String"); }
-//void types(int a) { Serial.println("it's an int"); }
-//void types(char *a) { Serial.println("it's a char*"); }
-//void types(float a) { Serial.println("it's a float"); }
-//void types(bool a) { Serial.println("it's a bool"); }
+Servo servo;
 
 class InputReceivedCallbacks: 
   public BLECharacteristicCallbacks {
@@ -33,10 +29,8 @@ class InputReceivedCallbacks:
         }
         Serial.print(inputTemp);
         if(inputTemp){
-          digitalWrite(gpio, HIGH);
-          delay(inputTemp*1000);
-          digitalWrite(gpio, LOW);
-          }
+          servo.write(inputTemp*8);
+        }
        Serial.println();
     }
 };
@@ -63,8 +57,8 @@ void setup() {
   BLEAdvertising *pAdvertising = pServer->getAdvertising();
   pAdvertising->start();
 
-  //sets LED
-  pinMode(gpio, OUTPUT);
+  servo.attach(gpio);
+  servo.write(0);
 }
 
 void loop() {
